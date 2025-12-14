@@ -1,21 +1,17 @@
 import gui from "./gui.js";
 import loadShader from "./loadShader.js";
 
-if (!Detector.webgl) Detector.addGetWebGLMessage();
-
-var container, stats;
-var camera, sceneFirstPass, sceneSecondPass, renderer;
-
-var clock = new THREE.Clock();
-var rtTexture, transferTexture;
-var cubeTextures = ["bonsai", "foot", "teapot"];
-
-var materialSecondPass;
-init().then(() => {
-  animate();
-});
-
 async function init() {
+  if (!Detector.webgl) Detector.addGetWebGLMessage();
+
+  let container, stats;
+  let camera, sceneFirstPass, sceneSecondPass, renderer;
+
+  let rtTexture, transferTexture;
+  let cubeTextures = ["bonsai", "foot", "teapot"];
+
+  let materialSecondPass;
+
   container = document.getElementById("container");
 
   camera = new THREE.PerspectiveCamera(
@@ -51,7 +47,7 @@ async function init() {
   cubeTextures["foot"].minFilter = THREE.LinearFilter;
   cubeTextures["foot"].magFilter = THREE.LinearFilter;
 
-  var transferTexture = updateTransferFunction();
+  transferTexture = updateTransferFunction();
 
   var screenSize = new THREE.Vector2(window.innerWidth, window.innerHeight);
   //Use NearestFilter to eliminate interpolation.  At the cube edges, interpolated world coordinates
@@ -145,17 +141,20 @@ async function init() {
   stats.domElement.style.top = "0px";
   container.appendChild(stats.domElement);
 
-  gui.init(materialSecondPass, updateTextures);
+  gui.init(materialSecondPass, () => updateTextures(materialSecondPass, transferTexture));
 
-  setCameraAspectRatio();
+  setCameraAspectRatio(camera, renderer);
 
-  window.addEventListener("resize", setCameraAspectRatio, false);
+  window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
+
+  // Start the rendering loop.
+  animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
 }
 
-function updateTextures(value) {
-  materialSecondPass.uniforms.transferTex.value = updateTransferFunction();
+function updateTextures(materialSecondPass, transferTexture) {
+  materialSecondPass.uniforms.transferTex.value = updateTransferFunction(transferTexture);
 }
-function updateTransferFunction() {
+function updateTransferFunction(transferTexture) {
   var canvas = document.createElement("canvas");
   canvas.height = 20;
   canvas.width = 256;
@@ -182,23 +181,21 @@ function updateTransferFunction() {
   return transferTexture;
 }
 
-function setCameraAspectRatio(event) {
+function setCameraAspectRatio(camera, renderer) {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function animate() {
-  requestAnimationFrame(animate);
+function animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats) {
+  requestAnimationFrame(() => animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats));
 
-  render();
+  render(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture);
   stats.update();
 }
 
-function render() {
-  var delta = clock.getDelta();
-
+function render(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture) {
   //Render first pass and store the world space coords of the back face fragments into the texture.
   renderer.setRenderTarget(rtTexture);
   renderer.render(sceneFirstPass, camera);
@@ -212,6 +209,6 @@ function render() {
     gui.controls.alphaCorrection;
 }
 
-export { materialSecondPass, updateTextures };
+init();
 
 //Leandro R Barbagallo - 2015 - lebarba at gmail.com
