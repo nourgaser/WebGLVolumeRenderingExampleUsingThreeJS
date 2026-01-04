@@ -47,7 +47,7 @@ async function init() {
   cubeTextures["foot"].minFilter = THREE.LinearFilter;
   cubeTextures["foot"].magFilter = THREE.LinearFilter;
 
-  transferTexture = updateTransferFunctionTexture();
+  transferTexture = generateTransferFunctionTexture();
 
   var screenSize = new THREE.Vector2(window.innerWidth, window.innerHeight);
   //Use NearestFilter to eliminate interpolation.  At the cube edges, interpolated world coordinates
@@ -147,7 +147,7 @@ async function init() {
 
   function handleTFChange() {
     materialSecondPass.uniforms.transferTex.value =
-      updateTransferFunctionTexture();
+      generateTransferFunctionTexture();
   }
 
   gui.init(handleModelChange, handleTFChange, cubeTextures);
@@ -167,7 +167,8 @@ async function init() {
   );
 }
 
-function updateTransferFunctionTexture() {
+// Generates the transfer function texture based on the current GUI settings.
+function generateTransferFunctionTexture() {
   var canvas = document.createElement("canvas");
   canvas.height = 20;
   canvas.width = 256;
