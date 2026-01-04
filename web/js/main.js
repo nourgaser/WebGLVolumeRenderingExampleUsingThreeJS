@@ -146,7 +146,8 @@ async function init() {
   }
 
   function handleTFChange() {
-    materialSecondPass.uniforms.transferTex.value =   updateTransferFunctionTexture();  
+    materialSecondPass.uniforms.transferTex.value =
+      updateTransferFunctionTexture();
   }
 
   gui.init(handleModelChange, handleTFChange, cubeTextures);
@@ -155,7 +156,15 @@ async function init() {
   window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
 
   // Start the rendering loop.
-  animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
+  animate(
+    materialSecondPass,
+    renderer,
+    sceneFirstPass,
+    sceneSecondPass,
+    camera,
+    rtTexture,
+    stats,
+  );
 }
 
 function updateTransferFunctionTexture() {
@@ -192,14 +201,46 @@ function setCameraAspectRatio(camera, renderer) {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats) {
-  requestAnimationFrame(() => animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats));
+function animate(
+  materialSecondPass,
+  renderer,
+  sceneFirstPass,
+  sceneSecondPass,
+  camera,
+  rtTexture,
+  stats,
+) {
+  requestAnimationFrame(() =>
+    animate(
+      materialSecondPass,
+      renderer,
+      sceneFirstPass,
+      sceneSecondPass,
+      camera,
+      rtTexture,
+      stats,
+    ),
+  );
 
-  render(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture);
+  render(
+    materialSecondPass,
+    renderer,
+    sceneFirstPass,
+    sceneSecondPass,
+    camera,
+    rtTexture,
+  );
   stats.update();
 }
 
-function render(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture) {
+function render(
+  materialSecondPass,
+  renderer,
+  sceneFirstPass,
+  sceneSecondPass,
+  camera,
+  rtTexture,
+) {
   //Render first pass and store the world space coords of the back face fragments into the texture.
   renderer.setRenderTarget(rtTexture);
   renderer.render(sceneFirstPass, camera);
