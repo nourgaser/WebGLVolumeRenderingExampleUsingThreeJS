@@ -47,7 +47,7 @@ async function init() {
   cubeTextures["foot"].minFilter = THREE.LinearFilter;
   cubeTextures["foot"].magFilter = THREE.LinearFilter;
 
-  transferTexture = updateTransferFunction();
+  transferTexture = updateTransferFunctionTexture();
 
   var screenSize = new THREE.Vector2(window.innerWidth, window.innerHeight);
   //Use NearestFilter to eliminate interpolation.  At the cube edges, interpolated world coordinates
@@ -141,8 +141,15 @@ async function init() {
   stats.domElement.style.top = "0px";
   container.appendChild(stats.domElement);
 
-  gui.init(materialSecondPass, () => updateTextures(materialSecondPass), cubeTextures);
+  function handleModelChange(value) {
+    materialSecondPass.uniforms.cubeTex.value = cubeTextures[value];
+  }
 
+  function handleTFChange() {
+    materialSecondPass.uniforms.transferTex.value =   updateTransferFunctionTexture();  
+  }
+
+  gui.init(handleModelChange, handleTFChange, cubeTextures);
   setCameraAspectRatio(camera, renderer);
 
   window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
@@ -151,10 +158,7 @@ async function init() {
   animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
 }
 
-function updateTextures(materialSecondPass) {
-  materialSecondPass.uniforms.transferTex.value = updateTransferFunction();
-}
-function updateTransferFunction() {
+function updateTransferFunctionTexture() {
   var canvas = document.createElement("canvas");
   canvas.height = 20;
   canvas.width = 256;
