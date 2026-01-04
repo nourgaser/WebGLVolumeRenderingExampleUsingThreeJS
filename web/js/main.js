@@ -159,20 +159,19 @@ async function init() {
     materialSecondPass.uniforms.steps.value = gui.controls.steps;
   }
 
-  gui.init(handleModelChange, handleTFChange, handleAlphaChange, handleStepsChange, cubeTextures);
+  gui.init(
+    handleModelChange,
+    handleTFChange,
+    handleAlphaChange,
+    handleStepsChange,
+    cubeTextures,
+  );
   setCameraAspectRatio(camera, renderer);
 
   window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
 
   // Start the rendering loop.
-  animate(
-    renderer,
-    sceneFirstPass,
-    sceneSecondPass,
-    camera,
-    rtTexture,
-    stats,
-  );
+  animate(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
 }
 
 // Generates the transfer function texture based on the current GUI settings.
@@ -229,23 +228,11 @@ function animate(
     ),
   );
 
-  render(
-    renderer,
-    sceneFirstPass,
-    sceneSecondPass,
-    camera,
-    rtTexture,
-  );
+  render(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture);
   stats.update();
 }
 
-function render(
-  renderer,
-  sceneFirstPass,
-  sceneSecondPass,
-  camera,
-  rtTexture,
-) {
+function render(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture) {
   // Render first pass and store the world space coords of the back face fragments into the texture. Note: rendered to rtTexture, not to screen.
   renderer.setRenderTarget(rtTexture);
   renderer.render(sceneFirstPass, camera);
