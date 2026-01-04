@@ -141,7 +141,7 @@ async function init() {
   stats.domElement.style.top = "0px";
   container.appendChild(stats.domElement);
 
-  gui.init(materialSecondPass, () => updateTextures(materialSecondPass, transferTexture), cubeTextures);
+  gui.init(materialSecondPass, () => updateTextures(materialSecondPass), cubeTextures);
 
   setCameraAspectRatio(camera, renderer);
 
@@ -151,10 +151,10 @@ async function init() {
   animate(materialSecondPass, renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
 }
 
-function updateTextures(materialSecondPass, transferTexture) {
-  materialSecondPass.uniforms.transferTex.value = updateTransferFunction(transferTexture);
+function updateTextures(materialSecondPass) {
+  materialSecondPass.uniforms.transferTex.value = updateTransferFunction();
 }
-function updateTransferFunction(transferTexture) {
+function updateTransferFunction() {
   var canvas = document.createElement("canvas");
   canvas.height = 20;
   canvas.width = 256;
@@ -174,7 +174,7 @@ function updateTransferFunction(transferTexture) {
   img.style.width = "256 px";
   img.style.height = "128 px";
 
-  transferTexture = new THREE.Texture(canvas);
+  const transferTexture = new THREE.Texture(canvas);
   transferTexture.wrapS = transferTexture.wrapT = THREE.ClampToEdgeWrapping;
   transferTexture.needsUpdate = true;
 
