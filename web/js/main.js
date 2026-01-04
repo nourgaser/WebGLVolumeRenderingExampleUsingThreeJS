@@ -171,7 +171,7 @@ async function init() {
   window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
 
   // Start the rendering loop.
-  animate(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
+  render(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture, stats);
 }
 
 // Generates the transfer function texture based on the current GUI settings.
@@ -209,7 +209,8 @@ function setCameraAspectRatio(camera, renderer) {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function animate(
+// The render loop.
+function render(
   renderer,
   sceneFirstPass,
   sceneSecondPass,
@@ -217,8 +218,19 @@ function animate(
   rtTexture,
   stats,
 ) {
+  // Render first pass and store the world space coords of the back face fragments into the texture. Note: rendered to rtTexture, not to screen.
+  renderer.setRenderTarget(rtTexture);
+  renderer.render(sceneFirstPass, camera);
+  renderer.setRenderTarget(null);
+
+  // Render the second pass and perform the volume rendering. Note: rendered to screen; final output.
+  renderer.render(sceneSecondPass, camera);
+
+  stats.update();
+
+  // Queue the next frame (render loop).
   requestAnimationFrame(() =>
-    animate(
+    render(
       renderer,
       sceneFirstPass,
       sceneSecondPass,
@@ -227,19 +239,6 @@ function animate(
       stats,
     ),
   );
-
-  render(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture);
-  stats.update();
-}
-
-function render(renderer, sceneFirstPass, sceneSecondPass, camera, rtTexture) {
-  // Render first pass and store the world space coords of the back face fragments into the texture. Note: rendered to rtTexture, not to screen.
-  renderer.setRenderTarget(rtTexture);
-  renderer.render(sceneFirstPass, camera);
-  renderer.setRenderTarget(null);
-
-  // Render the second pass and perform the volume rendering. Note: rendered to screen; final output.
-  renderer.render(sceneSecondPass, camera);
 }
 
 init();
