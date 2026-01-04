@@ -141,7 +141,7 @@ async function init() {
   stats.domElement.style.top = "0px";
   container.appendChild(stats.domElement);
 
-  gui.init(materialSecondPass, () => updateTextures(materialSecondPass, transferTexture));
+  gui.init(materialSecondPass, () => updateTextures(materialSecondPass, transferTexture), cubeTextures);
 
   setCameraAspectRatio(camera, renderer);
 

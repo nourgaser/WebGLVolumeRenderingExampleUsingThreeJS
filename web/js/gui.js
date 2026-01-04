@@ -11,7 +11,7 @@ var controls = new (function () {
   this.stepPos3 = 1.0;
 })();
 
-function init(materialSecondPass, updateTextures) {
+function init(materialSecondPass, updateTextures, cubeTextures) {
   var gui = new dat.GUI();
   var modelSelected = gui.add(controls, "model", [
     "bonsai",
