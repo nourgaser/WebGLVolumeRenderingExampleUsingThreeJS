@@ -11,13 +11,15 @@ var controls = new (function () {
   this.stepPos3 = 1.0;
 })();
 
-function init(onModelChange, onTFChange, modelOptions) {
+function init(onModelChange, onTFChange, onAlphaChange, onStepsChange, modelOptions) {
   var gui = new dat.GUI();
   var modelSelected = gui.add(controls, "model", modelOptions);
-  gui.add(controls, "steps", 0.0, 100.0);
-  gui.add(controls, "alphaCorrection", 0.01, 5.0).step(0.01);
+  var stepsController = gui.add(controls, "steps", 0.0, 100.0);
+  var alphaCorrectionController = gui.add(controls, "alphaCorrection", 0.01, 5.0).step(0.01);
 
   modelSelected.onChange(onModelChange);
+  stepsController.onChange(onStepsChange);
+  alphaCorrectionController.onChange(onAlphaChange);
 
   //Setup transfer function steps.
   var step1Folder = gui.addFolder("Step 1");

@@ -150,14 +150,22 @@ async function init() {
       generateTransferFunctionTexture();
   }
 
-  gui.init(handleModelChange, handleTFChange, cubeTextures);
+  function handleAlphaChange() {
+    materialSecondPass.uniforms.alphaCorrection.value =
+      gui.controls.alphaCorrection;
+  }
+
+  function handleStepsChange() {
+    materialSecondPass.uniforms.steps.value = gui.controls.steps;
+  }
+
+  gui.init(handleModelChange, handleTFChange, handleAlphaChange, handleStepsChange, cubeTextures);
   setCameraAspectRatio(camera, renderer);
 
   window.addEventListener("resize", () => setCameraAspectRatio(camera), false);
 
   // Start the rendering loop.
   animate(
-    materialSecondPass,
     renderer,
     sceneFirstPass,
     sceneSecondPass,
@@ -203,7 +211,6 @@ function setCameraAspectRatio(camera, renderer) {
 }
 
 function animate(
-  materialSecondPass,
   renderer,
   sceneFirstPass,
   sceneSecondPass,
@@ -213,7 +220,6 @@ function animate(
 ) {
   requestAnimationFrame(() =>
     animate(
-      materialSecondPass,
       renderer,
       sceneFirstPass,
       sceneSecondPass,
@@ -224,7 +230,6 @@ function animate(
   );
 
   render(
-    materialSecondPass,
     renderer,
     sceneFirstPass,
     sceneSecondPass,
@@ -235,24 +240,19 @@ function animate(
 }
 
 function render(
-  materialSecondPass,
   renderer,
   sceneFirstPass,
   sceneSecondPass,
   camera,
   rtTexture,
 ) {
-  //Render first pass and store the world space coords of the back face fragments into the texture.
+  // Render first pass and store the world space coords of the back face fragments into the texture. Note: rendered to rtTexture, not to screen.
   renderer.setRenderTarget(rtTexture);
   renderer.render(sceneFirstPass, camera);
   renderer.setRenderTarget(null);
 
-  //Render the second pass and perform the volume rendering.
+  // Render the second pass and perform the volume rendering. Note: rendered to screen; final output.
   renderer.render(sceneSecondPass, camera);
-
-  materialSecondPass.uniforms.steps.value = gui.controls.steps;
-  materialSecondPass.uniforms.alphaCorrection.value =
-    gui.controls.alphaCorrection;
 }
 
 init();
