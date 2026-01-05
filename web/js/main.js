@@ -8,7 +8,7 @@ async function init() {
   let camera, sceneFirstPass, sceneSecondPass, renderer;
 
   let rtTexture, transferTexture;
-  let cubeTextures = ["bonsai", "foot", "teapot"];
+  let cubeTextures = ["bonsai", "foot", "teapot", "medical_example"];
 
   let materialSecondPass;
 
@@ -34,6 +34,10 @@ async function init() {
   );
   cubeTextures["foot"] = new THREE.TextureLoader().load("textures/foot.png");
 
+  cubeTextures["medical_example"] = new THREE.TextureLoader().load(
+    "textures/medical_example.png",
+  );
+
   //Don't let it generate mipmaps to save memory and apply linear filtering to prevent use of LOD.
   cubeTextures["bonsai"].generateMipmaps = false;
   cubeTextures["bonsai"].minFilter = THREE.LinearFilter;
@@ -46,6 +50,10 @@ async function init() {
   cubeTextures["foot"].generateMipmaps = false;
   cubeTextures["foot"].minFilter = THREE.LinearFilter;
   cubeTextures["foot"].magFilter = THREE.LinearFilter;
+
+  cubeTextures["medical_example"].generateMipmaps = false;
+  cubeTextures["medical_example"].minFilter = THREE.LinearFilter;
+  cubeTextures["medical_example"].magFilter = THREE.LinearFilter;
 
   transferTexture = generateTransferFunctionTexture();
 
